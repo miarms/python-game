@@ -7,7 +7,9 @@ def move():
     y = 100
     taille = 50
     vitesse = 5
-
+    largeur_ecran = 1540
+    hauteur_ecran = 800
+    fenetre = pygame.display.set_mode((largeur_ecran, hauteur_ecran))
     running = True
     while running:
         for event in pygame.event.get():
@@ -22,6 +24,7 @@ def move():
             y -= vitesse
         if touches[pygame.K_DOWN]:
             y += vitesse
-        pygame.draw.rect(open_our_window(), ROUGE, (x, y, taille, taille))
-        pygame.display.update()
-move()
+        fenetre.fill((0, 0, 0))
+    pygame.draw.rect(fenetre, ROUGE, (x, y, taille, taille))
+    pygame.display.update()
+    pygame.quit()
