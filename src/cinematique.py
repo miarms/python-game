@@ -1,7 +1,7 @@
 import pygame
 import sys
 from PIL import Image
-
+from .jeu import jeu
 def cinematique():
     pygame.init()
     largeur_fenetre = 1540
@@ -29,13 +29,19 @@ def cinematique():
     en_cours = True
     while en_cours:
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                en_cours = False
             if event.type == pygame.MOUSEBUTTONDOWN:
+                jeu()
                 en_cours = False
          # Remplir l'écran avec la couleur grise
-        screen.fill(255, 255, 255)
+        screen.fill((255, 255, 255))
 
         # Afficher le GIF
         screen.blit(frames[frame_idx], (0, 0))
-def main():
-    cinematique()
-main()
+        pygame.display.flip() # update l'affichage
+        frame_idx = (frame_idx + 1) % len(frames) #Anime gif
+        pygame.time.delay(50) #Controle vitesse du gif
+        jeu()
+    pygame.quit
+    return None
