@@ -1,6 +1,7 @@
 # tuile.py
 import pygame
 import os
+from src.map.map_2 import map_2
 
 def map_1():
     # Initialisation de Pygame (sera déjà fait dans main.py, mais on le laisse ici pour compatibilité)
@@ -105,6 +106,10 @@ def map_1():
                     if joueur_rect.colliderect(vide):
                         collision = True
                         break
+                elif tuile == 2: #Porte
+                    porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
+                    if joueur_rect.colliderect(porte_rect):
+                        map_2()
             if collision:
                 break
 
