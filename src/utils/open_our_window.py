@@ -1,4 +1,5 @@
 import pygame
+from src.menu import menu
 def open_our_window():
     pygame.init()
     BLANC = (255, 255, 255)
@@ -11,5 +12,5 @@ def open_our_window():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
+        menu()    
     pygame.QUIT()

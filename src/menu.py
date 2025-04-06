@@ -18,7 +18,7 @@ def menu():
 
     # Charger le GIF
     try:
-        background_menu = Image.open("../ressources/menu/bg_menu.gif")
+        background_menu = Image.open("ressources/menu/bg_menu.gif")
     except FileNotFoundError:
         print("Erreur : Fichier 'bg_menu.gif' introuvable.")
         pygame.quit()
@@ -36,7 +36,7 @@ def menu():
     frame_idx = 0
 
     # Police pour le texte
-    font = pygame.font.Font("../ressources/fonts/RetroFunk.otf", 30)
+    font = pygame.font.Font("ressources/fonts/RetroFunk.otf", 30)
 
     # Définir les positions des boutons (horizontal)
     bouton_width = 300
@@ -99,7 +99,3 @@ def menu():
 
     pygame.quit()
     return None  # Si l'utilisateur ferme la fenêtre
-
-def main():
-    menu()
-main()
