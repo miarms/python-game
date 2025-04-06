@@ -37,6 +37,7 @@ def cinematique():
                 gif_playing = False  # Stop playing the GIF
                 screen.fill((255, 255, 255))
                 jeu()
+                en_cours = False
                 return  # Importantly, exit the cinematique function
 
         # Remplir l'écran avec la couleur blanche
