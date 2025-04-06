@@ -5,8 +5,8 @@ from PIL import Image
 # Fonction pour afficher le menu
 def menu():
     pygame.init()
-    largeur_fenetre = 1920
-    hauteur_fenetre = 1080
+    largeur_fenetre = 1540
+    hauteur_fenetre = 800
     screen = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
     pygame.display.set_caption("Menu Principal")
 
