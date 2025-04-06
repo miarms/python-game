@@ -26,8 +26,9 @@ def open_our_window():
                 etat = "quitter"
                 running = False
         elif etat == "cinematique":
-            cinematique()
-            etat = "jeu"
+            action = cinematique()
+            if action == "jeu":
+                etat = "jeu"
         elif etat == "jeu":
             # Placeholder for game logic
             jeu()
