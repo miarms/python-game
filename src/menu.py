@@ -49,6 +49,11 @@ def menu():
     bouton_play_rect = pygame.Rect(start_x, bouton_y, bouton_width, bouton_height)
     bouton_quit_rect = pygame.Rect(start_x + bouton_width + espace_entre_boutons, bouton_y, bouton_width, bouton_height)
 
+    # Paramètre emplacement bouton Settings
+    settings_x = largeur_fenetre - bouton_width - 10
+    settings_y = 15
+    bouton_settings_rect = pygame.Rect(settings_x, settings_y, bouton_width, bouton_height)
+
     # Taille du fond semi-transparent (plus grand pour englober les boutons)
     fond_boutons_rect = pygame.Rect(
         start_x - 20, bouton_y - 20, total_bouton_width + 40, bouton_height + 40)  # Adjusted size
@@ -81,12 +86,15 @@ def menu():
         # Dessiner les boutons avec des coins arrondis
         pygame.draw.rect(screen, couleur_bouton, bouton_play_rect, border_radius=15)  # Bouton "Play"
         pygame.draw.rect(screen, couleur_bouton, bouton_quit_rect, border_radius=15)  # Bouton "Quit"
+        pygame.draw.rect(screen, couleur_bouton, bouton_settings_rect, border_radius=15)  # Bouton "Settings"
 
         # Ajouter du texte aux boutons
         texte_play = font.render("Play", True, gris_fonce)
         texte_quit = font.render("Quit", True, gris_fonce)
+        texte_settings = font.render("Settings", True, gris_fonce)
         screen.blit(texte_play, (bouton_play_rect.centerx - texte_play.get_width() // 2, bouton_play_rect.centery - texte_play.get_height() // 2))
         screen.blit(texte_quit, (bouton_quit_rect.centerx - texte_quit.get_width() // 2, bouton_quit_rect.centery - texte_quit.get_height() // 2))
+        screen.blit(texte_settings, (bouton_settings_rect.centerx - texte_settings.get_width() // 2, bouton_settings_rect.centery - texte_settings.get_height() // 2))
 
         # Mettre à jour l'affichage
         pygame.display.flip()
