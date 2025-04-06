@@ -1,5 +1,5 @@
 import pygame
-
+from src.map.map_1 import map_1
 def jeu():
     pygame.init()
     largeur_ecran = 1540  # Or get these values from elsewhere if needed
@@ -12,3 +12,4 @@ def jeu():
 
 if __name__ == '__main__':
     jeu()
+    
