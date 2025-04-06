@@ -68,6 +68,8 @@ def menu():
                 if event.button == 1:  # Vérifie si l'utilisateur a cliqué
                     if bouton_play_rect.collidepoint(event.pos):
                         return "play"  # Retourne "play" si le bouton "Play" est cliqué
+                    if bouton_settings_rect.collidepoint(event.pos):
+                        return "Settings" # fonctionnalité option
                     elif bouton_quit_rect.collidepoint(event.pos):
                         pygame.quit()
                         sys.exit()  # Quitter le jeu
