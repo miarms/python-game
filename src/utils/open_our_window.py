@@ -31,7 +31,6 @@ def open_our_window():
         elif etat == "jeu":
             # Placeholder for game logic
             jeu()
-            etat = "menu"
         elif etat == "quitter":
             running = False
 

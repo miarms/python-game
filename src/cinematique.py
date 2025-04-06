@@ -2,12 +2,13 @@ import pygame
 import sys
 from PIL import Image
 from .jeu import jeu
+
 def cinematique():
     pygame.init()
     largeur_fenetre = 1540
-    hauteur_fenetre = 800 
+    hauteur_fenetre = 800
     screen = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
-    
+
     # Charger le GIF
     try:
         background_menu = Image.open("ressources/gif/cinematique.gif")
@@ -15,8 +16,8 @@ def cinematique():
         print("Erreur : Fichier 'cinematique.gif' introuvable.")
         pygame.quit()
         sys.exit()
-    
-     # Convertir le GIF en une liste de frames Pygame
+
+    # Convertir le GIF en une liste de frames Pygame
     frames = []
     for frame in range(background_menu.n_frames):
         background_menu.seek(frame)
@@ -31,17 +32,19 @@ def cinematique():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 en_cours = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                jeu()
-                en_cours = False
-         # Remplir l'écran avec la couleur grise
+
+        # Remplir l'écran avec la couleur grise
         screen.fill((255, 255, 255))
 
         # Afficher le GIF
         screen.blit(frames[frame_idx], (0, 0))
-        pygame.display.flip() # update l'affichage
-        frame_idx = (frame_idx + 1) % len(frames) #Anime gif
-        pygame.time.delay(50) #Controle vitesse du gif
-        jeu()
-    pygame.quit
+        pygame.display.flip()  # update l'affichage
+        frame_idx = (frame_idx + 1) % len(frames)  # Anime gif
+        pygame.time.delay(50)  # Controle vitesse du gif
+
+        # Check if the animation has finished
+        if frame_idx == 0:  # Assuming it loops, so back to the first frame means it finished
+            return "jeu"
+
+    pygame.quit()
     return None
