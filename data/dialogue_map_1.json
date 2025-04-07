@@ -2,56 +2,23 @@
     "map": {
       "dialogue1": {
         "personnage": "PNJ1",
-        "texte": "Bienvenue dans notre village !",
-        "choix": [
-          {
-            "texte": "Merci !",
-            "suivant": "dialogue2"
-          },
-          {
-            "texte": "Au revoir.",
-            "suivant": null
-          }
-        ]
+        "texte": "Aaah quelle belle journee !",
+        "suivant": "dialogue2"
       },
       "dialogue2": {
         "personnage": "PNJ1",
-        "texte": "Vous etes nouveaux par ici ?",
-        "choix": [
-          {
-            "texte": "Oui",
-            "suivant": "dialogue3"
-          },
-          {
-            "texte": "Non",
-            "suivant": "dialogue4"
-          }
-        ]
+        "texte": "**Tac Tac Tac**",
+        "suivant" : "dialogue3"
       },
       "dialogue3": {
         "personnage": "PNJ1",
-        "texte": "Pour jouer, utilisez une souris, des fleches directionelles et d'une touche entree ",
-        "suivant": "dialogue5"
+        "texte": "On dirait que papa est dehors",
+        "suivant": "dialogue4"
       },
       "dialogue4": {
         "personnage": "PNJ1",
-        "texte": "Parfait, alors faites comme chez vous !",
-        "choix": [
-          {
-            "texte": "A plus !",
-            "suivant": "dialogue5"
-          }
-        ]
-      },
-      "dialogue5": {
-        "personnage": "PNJ1",
-        "texte": "Bonne partie ! :)",
-        "choix": [
-          {
-            "texte": "Merci !",
-            "suivant": null
-          }
-        ]
+        "texte": "Allons le retrouver ! ",
+        "suivant" : null
       }
     }
   }
