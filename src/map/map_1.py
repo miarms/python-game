@@ -2,7 +2,7 @@
 import pygame
 import os
 from src.map.map_2 import map_2
-
+from src.BoiteDialogue import BoiteDialogue
 def map_1():
     # Initialisation de Pygame (sera déjà fait dans main.py, mais on le laisse ici pour compatibilité)
     pygame.init()
@@ -64,7 +64,12 @@ def map_1():
     # Position initiale du joueur
     joueur_x, joueur_y = 760, 400
     VITESSE = 5
-
+    num_map = 1
+    # Gestion du dialogue
+    boite_dialogue = BoiteDialogue("data/dialogue_map_1.json", (100, 650),
+                                 (1050, 700), (0,0,0), (255, 255, 255),
+                                 (255, 222, 89))
+    dialogue_en_cours = False
     # Boucle principale
     en_cours = True
     clock = pygame.time.Clock()
@@ -73,18 +78,19 @@ def map_1():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 en_cours = False
-
+            boite_dialogue.gerer_evenement(event)
         # Déplacement du joueur
-        touches = pygame.key.get_pressed()
-        nouveau_x, nouveau_y = joueur_x, joueur_y
-        if touches[pygame.K_LEFT]:
-            nouveau_x -= VITESSE
-        if touches[pygame.K_RIGHT]:
-            nouveau_x += VITESSE
-        if touches[pygame.K_UP]:
-            nouveau_y -= VITESSE
-        if touches[pygame.K_DOWN]:
-            nouveau_y += VITESSE
+        if not boite_dialogue.actif:
+            touches = pygame.key.get_pressed()
+            nouveau_x, nouveau_y = joueur_x, joueur_y
+            if touches[pygame.K_LEFT]:
+                nouveau_x -= VITESSE
+            if touches[pygame.K_RIGHT]:
+                nouveau_x += VITESSE
+            if touches[pygame.K_UP]:
+                nouveau_y -= VITESSE
+            if touches[pygame.K_DOWN]:
+                nouveau_y += VITESSE
 
         # Vérifier les collisions avec les murs
         joueur_rect = pygame.Rect(nouveau_x - 10, nouveau_y - 10, 20, 20)
@@ -109,6 +115,7 @@ def map_1():
                 elif tuile == 2: #Porte
                     porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
                     if joueur_rect.colliderect(porte_rect):
+                        num_map == 2
                         map_2()
             if collision:
                 break
@@ -119,6 +126,11 @@ def map_1():
         # Limiter le joueur à la fenêtre
         joueur_x = max(0, min(joueur_x, LARGEUR - 20))
         joueur_y = max(0, min(joueur_y, HAUTEUR - 20))
+
+        
+        if num_map == 1 and not dialogue_en_cours:
+            boite_dialogue.actif = True
+            dialogue_en_cours = True
 
         # Dessiner la carte
         fenetre.fill((0, 0, 0))  # Fond noir
@@ -137,7 +149,7 @@ def map_1():
 
         # Dessiner le joueur
         pygame.draw.circle(fenetre, (255, 0, 0), (joueur_x, joueur_y), 10)
-
+        boite_dialogue.afficher(fenetre)
         # Mettre à jour l'affichage
         pygame.display.flip()
         clock.tick(60)
