@@ -75,27 +75,23 @@ class perso(pygame.sprite.Sprite):
         dx = 0
         dy = 0
         is_moving = False
-        # Touche Z pour avancer vers le haut avec "walk_face"
-        if touches[pygame.K_z]:
-            dy -= self.vitesse
+        # Touche pour bouger + animation
+        if touches[pygame.K_s]:
+            dy += self.vitesse
             self.animation = "walk_face"
             is_moving = True
         # Touches fléchées existantes
-        if touches[pygame.K_LEFT]:
+        if touches[pygame.K_q]:
             dx -= self.vitesse
             self.animation = "walk_left"
             is_moving = True
-        if touches[pygame.K_RIGHT]:
+        if touches[pygame.K_d]:
             dx += self.vitesse
             self.animation = "walk_right"
             is_moving = True
-        if touches[pygame.K_UP]:
+        if touches[pygame.K_z]:
             dy -= self.vitesse
             self.animation = "walk_back"
-            is_moving = True
-        if touches[pygame.K_DOWN]:
-            dy += self.vitesse
-            self.animation = "walk_face"
             is_moving = True
 
         self.rect.x += dx
@@ -110,7 +106,7 @@ class perso(pygame.sprite.Sprite):
                 self.animation = "idle_right"
             elif self.animation == "walk_back":
                 self.animation = "idle_back"
-                
+
         for obstacle in obstacles:
             if self.rect.colliderect(obstacle):
                 if dx > 0:
