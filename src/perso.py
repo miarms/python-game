@@ -14,7 +14,8 @@ class perso(pygame.sprite.Sprite):
             "magie": 20,
             "vitesse": vitesse,
             "charisme": 50,
-            "chance": 25
+            "chance": 25,
+            "piece": 0
         }
 
         self.animation = "walk_face"
