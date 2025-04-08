@@ -63,7 +63,7 @@ def map_1():
     ]
     num_map = 1
         # Créer le joueur
-    joueur = perso(760, 400, "ressources/perso/perso.png", 5) # Utilisez le chemin chargé
+    joueur = perso(760, 400, "ressources/perso/perso.png", 1.5) # Utilisez le chemin chargé
     joueur_group = pygame.sprite.GroupSingle(joueur)
 
     # Liste pour stocker les rectangles des obstacles (murs et tables)
@@ -76,6 +76,7 @@ def map_1():
                 porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
                 if joueur.rect.colliderect(porte_rect):
                     num_map == 2
+                    print("map_2")
                     map_2()
 
     # Gestion du dialogue

@@ -31,10 +31,10 @@ class perso(pygame.sprite.Sprite):
     def load_animation(self):
         self.animations = {
             # 🧍 Idle / Attente
-            #"idle_face": self.get_frame(9, 9, 9),   # Row 9
-            #"idle_left": self.get_frame(10, 9, 9),  # Row 10
-            #"idle_right": self.get_frame(11, 9, 9), # Row 11
-            #"idle_back": self.get_frame(12, 9, 9),  # Row 12
+            "idle_face": self.get_frame(11, 1, 1),   # Row 9
+            "idle_left": self.get_frame(10, 11, 11),  # Row 10
+            "idle_right": self.get_frame(12, 11, 11), # Row 11
+            "idle_back": self.get_frame(9, 11, 11),  # Row 12
 
             # 🚶 Marche
             "walk_face": self.get_frame(11, 11, 11),   # Row 11
@@ -120,6 +120,14 @@ class perso(pygame.sprite.Sprite):
 
     def update(self, touches, obstacles):
         self.deplacement(touches, obstacles)
-    
+        is_moving = any(touches[key] for key in (pygame.K_z, pygame.K_q, pygame.K_d, pygame.K_s)) # Vérifie si une touche de mouvement est pressée
+        if is_moving:
+            self.frame_index += self.animation_speed
+            if self.frame_index >= len(self.animations[self.animation]):
+                self.frame_index = 0
+        else:
+            self.frame_index = 0  # Réinitialise l'index si pas de mouvement
+        self.image = self.animations[self.animation][int(self.frame_index)]
+
     def get_stats(self):
         return self.stats
