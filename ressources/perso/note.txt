@@ -1,0 +1,41 @@
+🧠 Analyse complète de ton sprite sheet
+Nom du fichier : perso.png
+
+🧱 1. Taille de l’image complète
+Largeur totale : 768 pixels
+
+Hauteur totale : 1240 pixels
+
+🔳 2. Taille d’un sprite individuel
+J’ai mesuré les frames : chaque sprite fait 64 × 64 pixels
+➡️ C’est le format standard LPC, bien joué 👍
+
+🧮 3. Disposition de la grille
+Colonnes : 768 / 64 = 12 sprites par ligne
+
+Lignes : 1240 / 64 = 19.375 ≈ 19 lignes entières + 1 incomplète (possiblement décorative ou pour effet spécial)
+
+🎞️ 4. Contenu des animations
+💃 Types d’animations visibles :
+En observant les postures, les poses et les directions, voici ce que je peux identifier :
+
+Ligne	Type d’action	Direction	Nb de frames	Notes
+0	Attaque (épée / bras levé)	Face	6	Frames de combat/attaque vers le bas
+1	Attaque	Dos	6	Vers le haut
+2	Attaque	Gauche	6	
+3	Attaque	Droite	6	
+4	Marche	Face	9	Animation de déplacement vers le bas
+5	Marche	Gauche	9	
+6	Marche	Droite	9	
+7	Marche	Dos	9	
+8	Attente / idle	Face	9	Bouge un peu, genre respiration
+9	Attente	Gauche	9	
+10	Attente	Droite	9	
+11	Attente	Dos	9	
+12	Magie ou interaction	Face	6	Bras levé et effets magiques
+13	Magie	Gauche	6	
+14	Magie	Droite	6	
+15	Magie	Dos	6	
+16	Touché / blessé / mort	Face	6	Chute ou blessure
+17	Touché	Dos	6	
+18	Mort complète	Dos (à plat)	1	Frame unique, personnage à terre
