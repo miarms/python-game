@@ -33,6 +33,7 @@ def map_1():
     tuiles["porte"] = extraire_tuile(360, 105, 32, 32)  # Porte torii
     tuiles["table"] = extraire_tuile(200, 200, 32, 32)  # Table
 
+
     # Représentation de la carte (0 = mur, 1 = sol, 2 = porte, 3 = table, 4 = vide)
     TAILLE_TUILE = 32
     carte = [
@@ -114,11 +115,6 @@ def map_1():
                     fenetre.blit(tuiles["sol"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
                 elif tuile == 2:  # Porte
                     fenetre.blit(tuiles["porte"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
-                porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
-                if joueur.rect.colliderect(porte_rect):
-                    num_map == 2
-                    print("map_2")
-                    map_2()
                 elif tuile == 3:  # Table
                     fenetre.blit(tuiles["table"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
 
