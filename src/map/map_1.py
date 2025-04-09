@@ -72,12 +72,6 @@ def map_1():
         for x, tuile in enumerate(ligne):
             if tuile == 0 or tuile == 3 or tuile == 4:  # Mur ou Table ou Vide
                 obstacles.append(pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE))
-            elif tuile == 2: #Porte
-                porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
-                if joueur.rect.colliderect(porte_rect):
-                    num_map == 2
-                    print("map_2")
-                    map_2()
 
     # Gestion du dialogue
     boite_dialogue = BoiteDialogue("data/dialogue_map_1.json", (100, 650),
@@ -120,6 +114,11 @@ def map_1():
                     fenetre.blit(tuiles["sol"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
                 elif tuile == 2:  # Porte
                     fenetre.blit(tuiles["porte"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
+                porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
+                if joueur.rect.colliderect(porte_rect):
+                    num_map == 2
+                    print("map_2")
+                    map_2()
                 elif tuile == 3:  # Table
                     fenetre.blit(tuiles["table"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
 
