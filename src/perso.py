@@ -1,4 +1,5 @@
 import pygame
+import json 
 
 class perso(pygame.sprite.Sprite):
     def __init__(self, x, y, image_path, vitesse):
@@ -17,7 +18,8 @@ class perso(pygame.sprite.Sprite):
             "chance": 25,
             "piece": 0
         }
-
+        self.inventaire = {}
+        self.charger_objets("data/items.json")
         self.animation = "walk_face"
         self.frame_index = 0
         self.animation_speed = 0.1
@@ -132,3 +134,25 @@ class perso(pygame.sprite.Sprite):
 
     def get_stats(self):
         return self.stats
+    
+    
+    def charger_objets(self, chemin_fichier):
+       with open(chemin_fichier, "r") as f:
+           self.tous_les_objets = json.load(f)
+
+    def ajouter_objet(self, id_objet, quantite=1):
+       if id_objet in self.tous_les_objets:
+           if id_objet in self.inventaire:
+               self.inventaire[id_objet] += quantite
+           else:
+               self.inventaire[id_objet] = quantite
+       else:
+           print(f"Objet avec l'ID {id_objet} non trouvé !")
+   
+    def retirer_objet(self, id_objet, quantite=1):
+       if id_objet in self.inventaire:
+           self.inventaire[id_objet] -= quantite
+           if self.inventaire[id_objet] <= 0:
+               del self.inventaire[id_objet]
+       else:
+           print(f"Objet avec l'ID {id_objet} non présent dans l'inventaire !")    

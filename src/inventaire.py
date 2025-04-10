@@ -1,12 +1,12 @@
 import pygame
 
-def inventaire():
+def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_texte):
     pygame.init()
     
     # Paramètres de la fenêtre
     largeur_inventaire = 1540
     hauteur_inventaire = 800
-    fenetre_inventaire = pygame.display.set_mode((largeur_inventaire, hauteur_inventaire))
+    #fenetre_inventaire = pygame.display.set_mode((largeur_inventaire, hauteur_inventaire)) # La fenêtre est créée en dehors, on la reçoit en paramètre
     pygame.display.set_caption("Inventaire")
 
     # Couleurs personnalisées (sombre et classe)
@@ -22,12 +22,12 @@ def inventaire():
     font_texte = pygame.font.Font(None, 24)
 
     # Paramètres des slots
-    slot_size = 32
+    slot_size = 64 # Augmenter la taille des slots pour les images
     slot_margin = 8
     
     # Section vêtements (3x3 en bas à gauche)
-    clothing_width = 3 * (slot_size + slot_margin) + slot_margin  # 120px
-    clothing_height = 3 * (slot_size + slot_margin) + slot_margin  # 120px
+    clothing_width = 3 * (slot_size + slot_margin) + slot_margin  # 224
+    clothing_height = 3 * (slot_size + slot_margin) + slot_margin  # 224
     clothing_rect = pygame.Rect(
         50,  # Marge gauche
         hauteur_inventaire - clothing_height - 50,  # En bas avec marge
@@ -36,8 +36,8 @@ def inventaire():
     )
     
     # Section objets divers (1x10 en bas, à droite des vêtements)
-    misc_width = 10 * (slot_size + slot_margin) + slot_margin  # 400px
-    misc_height = slot_size + 2 * slot_margin  # 48px
+    misc_width = 10 * (slot_size + slot_margin) + slot_margin  # 712
+    misc_height = slot_size + 2 * slot_margin  # 80
     misc_rect = pygame.Rect(
         clothing_rect.right + 20,  # À droite des vêtements avec une petite marge
         hauteur_inventaire - misc_height - 50,  # Aligné avec vêtements
@@ -58,6 +58,19 @@ def inventaire():
     running = True
     mouse_pos = (0, 0)
     
+    # Charger les images des objets
+    images_objets = {}
+    for id_objet, objet in tous_les_objets.items():
+        try:
+            image_path = objet["image"]
+            image = pygame.image.load(image_path).convert_alpha()
+            # Redimensionner l'image si nécessaire (à la taille du slot)
+            image = pygame.transform.scale(image, (slot_size, slot_size))
+            images_objets[id_objet] = image
+        except FileNotFoundError:
+            print(f"Image non trouvée pour l'objet : {objet['nom']}")
+            images_objets[id_objet] = None  # Ou une image par défaut, ou laisser None
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -94,6 +107,9 @@ def inventaire():
             y = clothing_rect.y + slot_margin + (i // 3) * (slot_size + slot_margin)
             slot_rect = pygame.Rect(x, y, slot_size, slot_size)
             draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
+            # Afficher l'image de l'objet s'il y en a un dans ce slot
+            # (Ici, il faudrait une logique pour savoir quel objet est équipé dans quel slot)
+            # Pour l'instant, on n'affiche rien
 
         # Slots objets divers (1x10)
         for i in range(10):
@@ -101,6 +117,15 @@ def inventaire():
             y = misc_rect.y + slot_margin
             slot_rect = pygame.Rect(x, y, slot_size, slot_size)
             draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
+            # Afficher l'image de l'objet s'il y en a un dans ce slot
+            # (Parcourir l'inventaire et vérifier si l'objet correspond à ce slot)
+            index_objet = list(inventaire_joueur.keys())  # Convertir les clés en liste
+            if i < len(index_objet):
+                id_objet = index_objet[i]
+                if id_objet in images_objets and images_objets[id_objet]:
+                    image_objet = images_objets[id_objet]
+                    image_rect = image_objet.get_rect(center=slot_rect.center)
+                    fenetre_inventaire.blit(image_objet, image_rect)
 
         # Statistiques
         stats = [
