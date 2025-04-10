@@ -18,8 +18,8 @@ def inventaire():
     slot_hover_color = (70, 85, 100)  # Slots au survol
 
     # Polices
-    font_titre = pygame.font.Font("../ressources/fonts/RetroFunk.otf", 40)
-    font_texte = pygame.font.Font("../ressources/fonts/PixelOperator.ttf", 24)
+    font_titre = pygame.font.Font(None, 40)
+    font_texte = pygame.font.Font(None, 24)
 
     # Paramètres des slots
     slot_size = 32

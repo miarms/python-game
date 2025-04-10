@@ -4,6 +4,7 @@ import os
 from src.map.map_2 import map_2
 from src.BoiteDialogue import BoiteDialogue
 from src.perso import perso
+from src.inventaire import inventaire
 def map_1():
     # Initialisation de Pygame (sera déjà fait dans main.py, mais on le laisse ici pour compatibilité)
     pygame.init()
@@ -83,11 +84,14 @@ def map_1():
     # Boucle principale
     en_cours = True
     clock = pygame.time.Clock()
-
+    afficher_inventaire = False
     while en_cours:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 en_cours = False
+            if event.type == pygame.KEYDOWN:  # C'est ici la correction !
+                if event.key == pygame.K_i:
+                    afficher_inventaire = not afficher_inventaire  # Inverser l'état
             boite_dialogue.gerer_evenement(event)
 
         # Déplacement du joueur
@@ -121,7 +125,8 @@ def map_1():
         # Dessiner le joueur
         joueur_group.draw(fenetre)
         boite_dialogue.afficher(fenetre)
-
+        if afficher_inventaire:
+            inventaire()  
         # Mettre à jour l'affichage
         pygame.display.flip()
         clock.tick(60)
