@@ -70,11 +70,13 @@ def map_1():
 
     # Liste pour stocker les rectangles des obstacles (murs et tables)
     obstacles = []
+    porte_rect = None
     for y, ligne in enumerate(carte):
         for x, tuile in enumerate(ligne):
             if tuile == 0 or tuile == 3 or tuile == 4:  # Mur ou Table ou Vide
                 obstacles.append(pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE))
-
+            if tuile == 2:
+                porte_rect = pygame.Rect(x * TAILLE_TUILE, y * TAILLE_TUILE, TAILLE_TUILE, TAILLE_TUILE)
     # Gestion du dialogue
     boite_dialogue = BoiteDialogue("data/dialogue_map_1.json", (100, 650),
                                  (1050, 700), (0,0,0), (255, 255, 255),
@@ -98,10 +100,19 @@ def map_1():
         if not boite_dialogue.actif:
             touches = pygame.key.get_pressed()
             joueur_group.update(touches, obstacles) # Mettre à jour le joueur
-
+ 
         # Limiter le joueur à la fenêtre (peut-être redondant si la carte remplit la fenêtre)
         joueur.rect.x = max(0, min(joueur.rect.x, LARGEUR - joueur.rect.width))
         joueur.rect.y = max(0, min(joueur.rect.y, HAUTEUR - joueur.rect.height))
+
+        if porte_rect:
+            print(f"Porte position: {porte_rect.topleft}")
+            print(f"Joueur position: {joueur.rect.topleft}")
+            if joueur.rect.colliderect(porte_rect):  # Vérifie la collision avec la porte
+                print("Collision détectée avec la porte")
+                print("Transition vers la map 2")
+                map_2()  # Appelle la fonction map_2
+                en_cours = False  # Arrête la boucle actuelle
 
         if num_map == 1 and not dialogue_en_cours:
             boite_dialogue.actif = True
