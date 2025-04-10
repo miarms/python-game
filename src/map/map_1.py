@@ -13,7 +13,9 @@ def map_1():
     LARGEUR, HAUTEUR = 1540, 800
     fenetre = pygame.display.set_mode((LARGEUR, HAUTEUR))
     pygame.display.set_caption("Carte de la maison")
-
+    fenetre_inventaire = pygame.display.set_mode((1540, 800))  # ou les dimensions que tu souhaites
+    font_texte = pygame.font.Font(None, 24)  # ou le chemin vers une police spécifique
+    couleur_texte = (255, 255, 255)  # Blanc, par exemple
     # Obtenir le chemin du dossier contenant le script
     chemin_script = os.path.dirname(os.path.abspath(__file__))
     chemin_tileset = os.path.join(chemin_script, "TilesetHouse.png")
@@ -137,7 +139,7 @@ def map_1():
         joueur_group.draw(fenetre)
         boite_dialogue.afficher(fenetre)
         if afficher_inventaire:
-            inventaire()  
+            inventaire(fenetre_inventaire, joueur.inventaire, joueur.tous_les_objets, font_texte, couleur_texte)
         # Mettre à jour l'affichage
         pygame.display.flip()
         clock.tick(60)
