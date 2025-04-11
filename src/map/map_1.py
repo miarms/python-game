@@ -4,7 +4,7 @@ import os
 from src.map.map_2 import map_2
 from src.BoiteDialogue import BoiteDialogue
 from src.perso import perso
-from src.inventaire import inventaire
+from src.inventaire.inventaire import inventaire
 
 def map_1():
     # Initialisation de Pygame (sera déjà fait dans main.py, mais on le laisse ici pour compatibilité)
