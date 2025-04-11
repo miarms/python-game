@@ -10,7 +10,7 @@ class perso(pygame.sprite.Sprite):
         self.vitesse = vitesse
         self.stats = {
             "vie": 100,
-            "energie": 100,
+            "sante": 100,
             "combat": 50,
             "magie": 20,
             "vitesse": vitesse,

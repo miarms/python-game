@@ -10,10 +10,10 @@
     },
     "potion_1": {
       "id": "2",
-      "nom": "Potion de soin",
+      "nom": "Potion de vie",
       "description": "Restaure une petite quantité de vie.",
       "type": "consommable",
-      "soin": 20,
+      "vie": 20,
       "valeur": 5,
       "image": "ressources/inventaire/potion/potion_1.png"
     },
@@ -34,5 +34,14 @@
       "defense": 3,
       "valeur": 15,
       "image": "ressources/inventaire/bottes/bottes_1.png"
+    },
+    "potion_2": {
+      "id": "5",
+      "nom": "Potion de sante",
+      "description": "Restaure une petite quantité de sante.",
+      "type": "consommable",
+      "sante": 20,
+      "valeur": 5,
+      "image": "ressources/inventaire/potion/potion_2.png"
     }
 }

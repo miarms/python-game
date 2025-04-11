@@ -185,7 +185,7 @@ def map_1():
         joueur_group.draw(fenetre)
         boite_dialogue.afficher(fenetre)
         if afficher_inventaire:
-            inventaire(fenetre_inventaire, joueur.inventaire, joueur.tous_les_objets, font_texte, couleur_texte)
+            inventaire(fenetre_inventaire, joueur.inventaire, joueur.tous_les_objets, font_texte, couleur_texte, joueur)
 
         # Mettre à jour l'affichage
         pygame.display.flip()

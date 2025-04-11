@@ -68,7 +68,7 @@ def draw_slot(surface, slot_rect, mouse_pos, slot_color, slot_hover_color, hover
 
 menu_contextuel_actif = None  # Variable globale pour gérer l'état du menu contextuel
 
-def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets, font_titre, font_texte, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, mouse_pos, clothing_rect, misc_rect, stats_rect, slot_size, slot_margin):
+def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets, font_titre, font_texte, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, mouse_pos, clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage=None):
     """
     Dessine l'interface complète de l'inventaire avec tooltip au survol et menu contextuel persistant.
     """
@@ -93,7 +93,15 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
             y_pos
         ))
         fenetre_inventaire.blit(titre, titre_rect)
-
+    # Afficher les stats du personnage dans stats_rect
+    if personnage:
+        stats = personnage.get_stats()
+        y_offset = stats_rect.top + 10
+        for stat, valeur in stats.items():
+            texte_stat = font_texte.render(f"{stat.capitalize()}: {valeur}", True, couleur_bouton)
+            texte_rect = texte_stat.get_rect(topleft=(stats_rect.left + 10, y_offset))
+            fenetre_inventaire.blit(texte_stat, texte_rect)
+            y_offset += font_texte.get_height() + 5
     # Variable pour stocker l'objet survolé
     objet_survole = None
 
@@ -153,7 +161,7 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
                 if inventaire_joueur[id_objet] > 1:
                     inventaire_joueur[id_objet] -= 1
                 else :
-                    inventaire_joueur.pop(id_objet, None)
+                    inventaire_joueur.pop(id)
                 menu_contextuel_actif = None  # Fermer le menu contextuel après action
 
     # Fermer le menu contextuel si clic en dehors

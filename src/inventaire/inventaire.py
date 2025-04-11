@@ -2,7 +2,7 @@ import pygame
 from .cheat_code import cheats_code
 from .interface_utils import draw_inventory_interface
 
-def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_texte):
+def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_texte, personnage):
     pygame.init()
     
     largeur_inventaire = 1540
@@ -89,7 +89,7 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
             fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets,
             font_titre, font_texte, couleur_bouton, gris_fonce, fond_section,
             slot_base_color, slot_hover_color, fond_transparent, mouse_pos,
-            clothing_rect, misc_rect, stats_rect, slot_size, slot_margin
+            clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage
         )
         
         pygame.display.flip()
