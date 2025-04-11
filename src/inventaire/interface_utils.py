@@ -1,31 +1,27 @@
 import pygame
 
 def draw_tooltip(surface, objet, tous_les_objets, font_texte, couleur_texte, couleur_fond, couleur_bordure, mouse_pos, screen_width, screen_height):
-    """
-    Dessine un encart avec la description et les stats de l'objet près de la position de la souris.
-    """
     if not objet or objet not in tous_les_objets:
         return
     
-    # Récupérer les informations de l'objet
     info = tous_les_objets[objet]
     nom = info["nom"]
     description = info["description"]
     type_objet = info["type"]
     
-    # Créer la liste des lignes à afficher
     lignes = [nom, description]
     
-    # Ajouter les stats selon le type d'objet
     if type_objet == "arme":
-        lignes.append(f"Attaque: {info.get('attaque', 0)}")
+        lignes.append(f"Combat: {info.get('combat', 0)}")
     elif type_objet == "consommable":
-        lignes.append(f"Soin: {info.get('soin', 0)}")
+        if "vie" in info:
+            lignes.append(f"Vie: {info['vie']}")
+        if "sante" in info:
+            lignes.append(f"Santé: {info['sante']}")
     elif type_objet == "armure":
         lignes.append(f"Défense: {info.get('defense', 0)}")
     lignes.append(f"Valeur: {info.get('valeur', 0)}")
     
-    # Calculer la taille du tooltip
     max_width = 0
     texte_surfaces = []
     for ligne in lignes:
@@ -37,11 +33,9 @@ def draw_tooltip(surface, objet, tous_les_objets, font_texte, couleur_texte, cou
     tooltip_width = max_width + 2 * padding
     tooltip_height = len(lignes) * (font_texte.get_height() + 5) + 2 * padding
     
-    # Positionner le tooltip près de la souris
     tooltip_x = mouse_pos[0] + 15
     tooltip_y = mouse_pos[1] - tooltip_height // 2
     
-    # Ajuster pour ne pas sortir de l'écran
     if tooltip_x + tooltip_width > screen_width:
         tooltip_x = mouse_pos[0] - tooltip_width - 15
     if tooltip_y + tooltip_height > screen_height:
@@ -49,12 +43,10 @@ def draw_tooltip(surface, objet, tous_les_objets, font_texte, couleur_texte, cou
     if tooltip_y < 0:
         tooltip_y = 10
     
-    # Dessiner le fond et la bordure
     tooltip_rect = pygame.Rect(tooltip_x, tooltip_y, tooltip_width, tooltip_height)
     pygame.draw.rect(surface, couleur_fond, tooltip_rect, border_radius=5)
     pygame.draw.rect(surface, couleur_bordure, tooltip_rect, 2, border_radius=5)
     
-    # Afficher chaque ligne
     for i, texte_surface in enumerate(texte_surfaces):
         texte_rect = texte_surface.get_rect(topleft=(tooltip_x + padding, tooltip_y + padding + i * (font_texte.get_height() + 5)))
         surface.blit(texte_surface, texte_rect)
@@ -66,14 +58,13 @@ def draw_slot(surface, slot_rect, mouse_pos, slot_color, slot_hover_color, hover
     if is_hovered:
         pygame.draw.rect(surface, hover_effect_color, slot_rect, border_radius=5)
 
-menu_contextuel_actif = None  # Variable globale pour gérer l'état du menu contextuel
+menu_contextuel_actif = None
+message_actif = None
+message_timer = 0
 
 def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets, font_titre, font_texte, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, mouse_pos, clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage=None):
-    """
-    Dessine l'interface complète de l'inventaire avec tooltip au survol et menu contextuel persistant.
-    """
-    global menu_contextuel_actif  # Utiliser la variable globale pour gérer le menu contextuel
-
+    global menu_contextuel_actif, message_actif, message_timer
+    
     fenetre_inventaire.fill(gris_fonce)
     
     for rect in [clothing_rect, misc_rect, stats_rect]:
@@ -93,7 +84,7 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
             y_pos
         ))
         fenetre_inventaire.blit(titre, titre_rect)
-    # Afficher les stats du personnage dans stats_rect
+    
     if personnage:
         stats = personnage.get_stats()
         y_offset = stats_rect.top + 10
@@ -102,10 +93,26 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
             texte_rect = texte_stat.get_rect(topleft=(stats_rect.left + 10, y_offset))
             fenetre_inventaire.blit(texte_stat, texte_rect)
             y_offset += font_texte.get_height() + 5
-    # Variable pour stocker l'objet survolé
+    
     objet_survole = None
-
-    # Slots pour les objets divers
+    last_click_time = 0
+    click_delay = 200
+    
+    sous_types_slots = {
+        "plastron": pygame.Rect(clothing_rect.x + slot_margin, clothing_rect.y + slot_margin, slot_size, slot_size),
+        "bottes": pygame.Rect(clothing_rect.x + slot_margin, clothing_rect.y + slot_margin + slot_size + slot_margin, slot_size, slot_size)
+    }
+    for sous_type, slot_rect in sous_types_slots.items():
+        draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
+        if personnage and personnage.equipement.get(sous_type):
+            id_objet = personnage.equipement[sous_type]
+            if id_objet in images_objets and images_objets[id_objet]:
+                image_objet = images_objets[id_objet]
+                image_rect = image_objet.get_rect(center=slot_rect.center)
+                fenetre_inventaire.blit(image_objet, image_rect)
+            if slot_rect.collidepoint(mouse_pos):
+                objet_survole = id_objet
+    
     for i in range(10):
         x = misc_rect.x + slot_margin + i * (slot_size + slot_margin)
         y = misc_rect.y + slot_margin
@@ -118,57 +125,67 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
                 image_objet = images_objets[id_objet]
                 image_rect = image_objet.get_rect(center=slot_rect.center)
                 fenetre_inventaire.blit(image_objet, image_rect)
-                # Afficher la quantité pour les consommables
                 if tous_les_objets[id_objet]["type"] == "consommable" and inventaire_joueur[id_objet] > 1:
                     quantite_texte = font_texte.render(str(inventaire_joueur[id_objet]), True, couleur_bouton)
                     quantite_rect = quantite_texte.get_rect(bottomright=slot_rect.bottomright)
                     fenetre_inventaire.blit(quantite_texte, quantite_rect)
-                # Vérifier si le slot est survolé
                 if slot_rect.collidepoint(mouse_pos):
                     objet_survole = id_objet
-                # Activer le menu contextuel au clic
-                if pygame.mouse.get_pressed()[0] and slot_rect.collidepoint(mouse_pos):
+                current_time = pygame.time.get_ticks()
+                if pygame.mouse.get_pressed()[0] and slot_rect.collidepoint(mouse_pos) and current_time - last_click_time > click_delay:
+                    last_click_time = current_time
                     menu_contextuel_actif = (mouse_pos, id_objet)
-
-    # Afficher le menu contextuel si actif
+    
     if menu_contextuel_actif:
         menu_pos, id_objet = menu_contextuel_actif
         menu_width, menu_height = 150, 80
         menu_rect = pygame.Rect(menu_pos[0], menu_pos[1], menu_width, menu_height)
         pygame.draw.rect(fenetre_inventaire, (50, 50, 50), menu_rect, border_radius=5)
         pygame.draw.rect(fenetre_inventaire, (255, 255, 255), menu_rect, 2, border_radius=5)
-
-        # Ajouter les options "Utiliser" et "Jeter"
+        
         utiliser_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 10, menu_width - 20, 30)
         jeter_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 40, menu_width - 20, 30)
-
+        
         pygame.draw.rect(fenetre_inventaire, (100, 100, 100), utiliser_rect, border_radius=5)
         pygame.draw.rect(fenetre_inventaire, (100, 100, 100), jeter_rect, border_radius=5)
-
+        
         utiliser_texte = font_texte.render("Utiliser", True, (255, 255, 255))
         jeter_texte = font_texte.render("Jeter", True, (255, 255, 255))
-
+        
         fenetre_inventaire.blit(utiliser_texte, utiliser_texte.get_rect(center=utiliser_rect.center))
         fenetre_inventaire.blit(jeter_texte, jeter_texte.get_rect(center=jeter_rect.center))
-
-        # Gérer les clics sur les options
-        if pygame.mouse.get_pressed()[0]:
+        
+        current_time = pygame.time.get_ticks()
+        if pygame.mouse.get_pressed()[0] and current_time - last_click_time > click_delay:
+            last_click_time = current_time
             if utiliser_rect.collidepoint(mouse_pos):
                 print(f"Utiliser l'objet : {tous_les_objets[id_objet]['nom']}")
-                menu_contextuel_actif = None  # Fermer le menu contextuel après action
+                if personnage:
+                    message = personnage.utiliser_objet(id_objet)
+                    if message:
+                        message_actif = message
+                        message_timer = pygame.time.get_ticks() + 2000
+                menu_contextuel_actif = None
             elif jeter_rect.collidepoint(mouse_pos):
                 print(f"Jeter l'objet : {tous_les_objets[id_objet]['nom']}")
-                if inventaire_joueur[id_objet] > 1:
-                    inventaire_joueur[id_objet] -= 1
-                else :
-                    inventaire_joueur.pop(id)
-                menu_contextuel_actif = None  # Fermer le menu contextuel après action
-
-    # Fermer le menu contextuel si clic en dehors
-    if menu_contextuel_actif and not menu_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
+                if id_objet in inventaire_joueur:
+                    if inventaire_joueur[id_objet] > 1:
+                        inventaire_joueur[id_objet] -= 1
+                    else:
+                        inventaire_joueur.pop(id_objet)
+                menu_contextuel_actif = None
+    
+    if menu_contextuel_actif and not menu_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0] and current_time - last_click_time > click_delay:
+        last_click_time = current_time
         menu_contextuel_actif = None
-
-    # Afficher le tooltip si un objet est survolé
+    
+    # Afficher le message temporaire en haut à droite de l'écran
+    if message_actif and pygame.time.get_ticks() < message_timer:
+        texte_message = font_texte.render(message_actif, True, couleur_bouton)
+        message_rect = texte_message.get_rect(topright=(fenetre_inventaire.get_width() - 10, 10))  # Position en haut à droite
+        pygame.draw.rect(fenetre_inventaire, (50, 60, 70), message_rect.inflate(10, 10), border_radius=5)  # Fond avec marge
+        fenetre_inventaire.blit(texte_message, message_rect)
+    
     if objet_survole:
         draw_tooltip(
             fenetre_inventaire, 
@@ -176,8 +193,8 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
             tous_les_objets, 
             font_texte, 
             couleur_bouton, 
-            (50, 60, 70, 200),  # Fond semi-transparent
-            (255, 222, 89),      # Bordure
+            (50, 60, 70, 200),
+            (255, 222, 89),
             mouse_pos, 
             fenetre_inventaire.get_width(), 
             fenetre_inventaire.get_height()

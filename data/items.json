@@ -4,7 +4,7 @@
       "nom": "Épée rouillée",
       "description": "Une épée basique, vieille et usée.",
       "type": "arme",
-      "attaque": 5,
+      "combat": 5,
       "valeur": 10,
       "image": "ressources/inventaire/arme/arme_1.png"
     },
@@ -22,15 +22,17 @@
       "nom": "Armure de cuir",
       "description": "Fournit une protection basique.",
       "type": "armure",
+      "sous-type": "plastron",
       "defense": 3,
       "valeur": 15,
       "image": "ressources/inventaire/armure/armure_1.png"
     },
     "bottes_1": {
       "id": "4",
-      "nom": "Armure de cuir",
+      "nom": "Botte de cuir",
       "description": "Fournit une protection basique.",
       "type": "armure",
+      "sous-type": "bottes",
       "defense": 3,
       "valeur": 15,
       "image": "ressources/inventaire/bottes/bottes_1.png"
