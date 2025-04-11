@@ -66,10 +66,14 @@ def draw_slot(surface, slot_rect, mouse_pos, slot_color, slot_hover_color, hover
     if is_hovered:
         pygame.draw.rect(surface, hover_effect_color, slot_rect, border_radius=5)
 
+menu_contextuel_actif = None  # Variable globale pour gérer l'état du menu contextuel
+
 def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets, font_titre, font_texte, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, mouse_pos, clothing_rect, misc_rect, stats_rect, slot_size, slot_margin):
     """
-    Dessine l'interface complète de l'inventaire avec tooltip au survol.
+    Dessine l'interface complète de l'inventaire avec tooltip au survol et menu contextuel persistant.
     """
+    global menu_contextuel_actif  # Utiliser la variable globale pour gérer le menu contextuel
+
     fenetre_inventaire.fill(gris_fonce)
     
     for rect in [clothing_rect, misc_rect, stats_rect]:
@@ -92,17 +96,6 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
 
     # Variable pour stocker l'objet survolé
     objet_survole = None
-    
-    # Slots pour les vêtements
-    for i in range(9):
-        x = clothing_rect.x + slot_margin + (i % 3) * (slot_size + slot_margin)
-        y = clothing_rect.y + slot_margin + (i // 3) * (slot_size + slot_margin)
-        slot_rect = pygame.Rect(x, y, slot_size, slot_size)
-        draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
-        # Vérifier le survol (à compléter si des objets sont dans clothing_rect)
-        if slot_rect.collidepoint(mouse_pos):
-            # Pour l'instant, clothing_rect est vide, mais vous pouvez ajouter une logique ici
-            pass
 
     # Slots pour les objets divers
     for i in range(10):
@@ -125,19 +118,47 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
                 # Vérifier si le slot est survolé
                 if slot_rect.collidepoint(mouse_pos):
                     objet_survole = id_objet
+                # Activer le menu contextuel au clic
+                if pygame.mouse.get_pressed()[0] and slot_rect.collidepoint(mouse_pos):
+                    menu_contextuel_actif = (mouse_pos, id_objet)
 
-    # Afficher les stats
-    stats = [
-        "Force: 15",
-        "Agilité: 12",
-        "Endurance: 18",
-        "Intelligence: 10",
-        "Chance: 7"
-    ]
-    for i, stat in enumerate(stats):
-        texte = font_texte.render(stat, True, couleur_bouton)
-        texte_rect = texte.get_rect(topleft=(stats_rect.x + 20, stats_rect.y + 20 + i * 30))
-        fenetre_inventaire.blit(texte, texte_rect)
+    # Afficher le menu contextuel si actif
+    if menu_contextuel_actif:
+        menu_pos, id_objet = menu_contextuel_actif
+        menu_width, menu_height = 150, 80
+        menu_rect = pygame.Rect(menu_pos[0], menu_pos[1], menu_width, menu_height)
+        pygame.draw.rect(fenetre_inventaire, (50, 50, 50), menu_rect, border_radius=5)
+        pygame.draw.rect(fenetre_inventaire, (255, 255, 255), menu_rect, 2, border_radius=5)
+
+        # Ajouter les options "Utiliser" et "Jeter"
+        utiliser_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 10, menu_width - 20, 30)
+        jeter_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 40, menu_width - 20, 30)
+
+        pygame.draw.rect(fenetre_inventaire, (100, 100, 100), utiliser_rect, border_radius=5)
+        pygame.draw.rect(fenetre_inventaire, (100, 100, 100), jeter_rect, border_radius=5)
+
+        utiliser_texte = font_texte.render("Utiliser", True, (255, 255, 255))
+        jeter_texte = font_texte.render("Jeter", True, (255, 255, 255))
+
+        fenetre_inventaire.blit(utiliser_texte, utiliser_texte.get_rect(center=utiliser_rect.center))
+        fenetre_inventaire.blit(jeter_texte, jeter_texte.get_rect(center=jeter_rect.center))
+
+        # Gérer les clics sur les options
+        if pygame.mouse.get_pressed()[0]:
+            if utiliser_rect.collidepoint(mouse_pos):
+                print(f"Utiliser l'objet : {tous_les_objets[id_objet]['nom']}")
+                menu_contextuel_actif = None  # Fermer le menu contextuel après action
+            elif jeter_rect.collidepoint(mouse_pos):
+                print(f"Jeter l'objet : {tous_les_objets[id_objet]['nom']}")
+                if inventaire_joueur[id_objet] > 1:
+                    inventaire_joueur[id_objet] -= 1
+                else :
+                    inventaire_joueur.pop(id_objet, None)
+                menu_contextuel_actif = None  # Fermer le menu contextuel après action
+
+    # Fermer le menu contextuel si clic en dehors
+    if menu_contextuel_actif and not menu_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
+        menu_contextuel_actif = None
 
     # Afficher le tooltip si un objet est survolé
     if objet_survole:
