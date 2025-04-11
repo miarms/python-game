@@ -25,5 +25,14 @@
       "defense": 3,
       "valeur": 15,
       "image": "ressources/inventaire/armure/armure_1.png"
+    },
+    "bottes_1": {
+      "id": "4",
+      "nom": "Armure de cuir",
+      "description": "Fournit une protection basique.",
+      "type": "armure",
+      "defense": 3,
+      "valeur": 15,
+      "image": "ressources/inventaire/bottes/bottes_1.png"
     }
 }

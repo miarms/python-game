@@ -53,6 +53,11 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
                 image_objet = images_objets[id_objet]
                 image_rect = image_objet.get_rect(center=slot_rect.center)
                 fenetre_inventaire.blit(image_objet, image_rect)
+                # Afficher la quantité pour les consommables
+                if tous_les_objets[id_objet]["type"] == "consommable" and inventaire_joueur[id_objet] > 1:
+                    quantite_texte = font_texte.render(str(inventaire_joueur[id_objet]), True, couleur_bouton)
+                    quantite_rect = quantite_texte.get_rect(bottomright=slot_rect.bottomright)
+                    fenetre_inventaire.blit(quantite_texte, quantite_rect)
 
     stats = [
         "Force: 15",
