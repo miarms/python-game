@@ -74,7 +74,7 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
                         fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_bouton,
                         images_objets, font_titre, couleur_bouton, gris_fonce, fond_section,
                         slot_base_color, slot_hover_color, fond_transparent,
-                        misc_rect, stats_rect, slot_size, slot_margin
+                        misc_rect, stats_rect, slot_size, slot_margin, personnage
                     ):
                         running = False
 

@@ -97,9 +97,10 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
     click_delay = 200
     
     sous_types_slots = {
-        "plastron": pygame.Rect(misc_rect.x + slot_margin, misc_rect.y + slot_margin, slot_size, slot_size),
+        "armure": pygame.Rect(misc_rect.x + slot_margin, misc_rect.y + slot_margin, slot_size, slot_size),
         "bottes": pygame.Rect(misc_rect.x + slot_margin, misc_rect.y + slot_margin + slot_size + slot_margin, slot_size, slot_size)
     }
+    # In draw_inventory_interface (interface_utils.py)
     for sous_type, slot_rect in sous_types_slots.items():
         draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
         if personnage and personnage.equipement.get(sous_type):
@@ -110,6 +111,11 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
                 fenetre_inventaire.blit(image_objet, image_rect)
             if slot_rect.collidepoint(mouse_pos):
                 objet_survole = id_objet
+            # Add click handling
+            current_time = pygame.time.get_ticks()
+            if pygame.mouse.get_pressed()[0] and slot_rect.collidepoint(mouse_pos) and current_time - last_click_time > click_delay:
+                last_click_time = current_time
+                menu_contextuel_actif = (mouse_pos, id_objet)
     
     # Slots pour les objets divers : 3 lignes de 10 slots
     for row in range(3):  # 3 lignes
@@ -137,44 +143,95 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
                         last_click_time = current_time
                         menu_contextuel_actif = (mouse_pos, id_objet)
     
+    # Gestion du menu contextuel
     if menu_contextuel_actif:
         menu_pos, id_objet = menu_contextuel_actif
-        menu_width, menu_height = 150, 80
-        menu_rect = pygame.Rect(menu_pos[0], menu_pos[1], menu_width, menu_height)
-        pygame.draw.rect(fenetre_inventaire, (50, 50, 50), menu_rect, border_radius=5)
-        pygame.draw.rect(fenetre_inventaire, (255, 255, 255), menu_rect, 2, border_radius=5)
+        if id_objet not in tous_les_objets:
+            print(f"Erreur : Objet {id_objet} non trouvé dans tous_les_objets")
+            menu_contextuel_actif = None
+            return
         
-        utiliser_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 10, menu_width - 20, 30)
-        jeter_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 40, menu_width - 20, 30)
+        objet = tous_les_objets[id_objet]
+        type_objet = objet["type"]
+        print(f"Ouverture menu contextuel pour {objet['nom']} (type: {type_objet}, id: {id_objet})")  # Debug
         
-        pygame.draw.rect(fenetre_inventaire, (100, 100, 100), utiliser_rect, border_radius=5)
-        pygame.draw.rect(fenetre_inventaire, (100, 100, 100), jeter_rect, border_radius=5)
-        
-        utiliser_texte = font_texte.render("Utiliser", True, (255, 255, 255))
-        jeter_texte = font_texte.render("Jeter", True, (255, 255, 255))
-        
-        fenetre_inventaire.blit(utiliser_texte, utiliser_texte.get_rect(center=utiliser_rect.center))
-        fenetre_inventaire.blit(jeter_texte, jeter_texte.get_rect(center=jeter_rect.center))
-        
-        current_time = pygame.time.get_ticks()
-        if pygame.mouse.get_pressed()[0] and current_time - last_click_time > click_delay:
-            last_click_time = current_time
-            if utiliser_rect.collidepoint(mouse_pos):
-                print(f"Utiliser l'objet : {tous_les_objets[id_objet]['nom']}")
+        # Déterminer les options du menu selon le type d'objet
+        if type_objet in ["arme", "armure"]:
+            # Menu avec une seule option : "Équiper" ou "Enlever"
+            sous_type = objet.get("sous-type", None) if type_objet == "armure" else "arme"
+            if type_objet == "armure" and not sous_type:
+                print(f"Erreur : Aucune sous-type défini pour l'armure {objet['nom']}")  # Debug
+                menu_contextuel_actif = None
+                return
+            
+            is_equipped = (personnage and 
+                          ((type_objet == "arme" and personnage.equipement.get("arme") == id_objet) or
+                           (type_objet == "armure" and sous_type and personnage.equipement.get(sous_type) == id_objet)))
+            print(f"État équipé : {is_equipped}, sous-type : {sous_type}, équipement actuel : {personnage.equipement}")  # Debug
+            action_text = "Enlever" if is_equipped else "Équiper"
+            
+            menu_width, menu_height = 150, 50
+            menu_rect = pygame.Rect(menu_pos[0], menu_pos[1], menu_width, menu_height)
+            pygame.draw.rect(fenetre_inventaire, (50, 50, 50), menu_rect, border_radius=5)
+            pygame.draw.rect(fenetre_inventaire, (255, 255, 255), menu_rect, 2, border_radius=5)
+            
+            action_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 10, menu_width - 20, 30)
+            pygame.draw.rect(fenetre_inventaire, (100, 100, 100), action_rect, border_radius=5)
+            
+            action_texte = font_texte.render(action_text, True, (255, 255, 255))
+            fenetre_inventaire.blit(action_texte, action_texte.get_rect(center=action_rect.center))
+            
+            current_time = pygame.time.get_ticks()
+            if pygame.mouse.get_pressed()[0] and action_rect.collidepoint(mouse_pos) and current_time - last_click_time > click_delay:
+                last_click_time = current_time
                 if personnage:
-                    message = personnage.utiliser_objet(id_objet)
-                    if message:
-                        message_actif = message
-                        message_timer = pygame.time.get_ticks() + 2000
-                menu_contextuel_actif = None
-            elif jeter_rect.collidepoint(mouse_pos):
-                print(f"Jeter l'objet : {tous_les_objets[id_objet]['nom']}")
-                if id_objet in inventaire_joueur:
-                    if inventaire_joueur[id_objet] > 1:
-                        inventaire_joueur[id_objet] -= 1
+                    if is_equipped:
+                        personnage.desequiper_objet(id_objet)
+                        message_actif = f"Déséquipé : {objet['nom']}"
                     else:
-                        inventaire_joueur.pop(id_objet)
+                        personnage.equiper_objet(id_objet)
+                        message_actif = f"Équipé : {objet['nom']}"
+                    message_timer = pygame.time.get_ticks() + 2000
                 menu_contextuel_actif = None
+        
+        else:
+            # Menu pour les autres types d'objets (ex. consommables)
+            menu_width, menu_height = 150, 80
+            menu_rect = pygame.Rect(menu_pos[0], menu_pos[1], menu_width, menu_height)
+            pygame.draw.rect(fenetre_inventaire, (50, 50, 50), menu_rect, border_radius=5)
+            pygame.draw.rect(fenetre_inventaire, (255, 255, 255), menu_rect, 2, border_radius=5)
+            
+            utiliser_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 10, menu_width - 20, 30)
+            jeter_rect = pygame.Rect(menu_pos[0] + 10, menu_pos[1] + 40, menu_width - 20, 30)
+            
+            pygame.draw.rect(fenetre_inventaire, (100, 100, 100), utiliser_rect, border_radius=5)
+            pygame.draw.rect(fenetre_inventaire, (100, 100, 100), jeter_rect, border_radius=5)
+            
+            utiliser_texte = font_texte.render("Utiliser", True, (255, 255, 255))
+            jeter_texte = font_texte.render("Jeter", True, (255, 255, 255))
+            
+            fenetre_inventaire.blit(utiliser_texte, utiliser_texte.get_rect(center=utiliser_rect.center))
+            fenetre_inventaire.blit(jeter_texte, jeter_texte.get_rect(center=jeter_rect.center))
+            
+            current_time = pygame.time.get_ticks()
+            if pygame.mouse.get_pressed()[0] and current_time - last_click_time > click_delay:
+                last_click_time = current_time
+                if utiliser_rect.collidepoint(mouse_pos):
+                    print(f"Utiliser l'objet : {tous_les_objets[id_objet]['nom']}")
+                    if personnage:
+                        message = personnage.utiliser_objet(id_objet)
+                        if message:
+                            message_actif = message
+                            message_timer = pygame.time.get_ticks() + 2000
+                    menu_contextuel_actif = None
+                elif jeter_rect.collidepoint(mouse_pos):
+                    print(f"Jeter l'objet : {tous_les_objets[id_objet]['nom']}")
+                    if id_objet in inventaire_joueur:
+                        if inventaire_joueur[id_objet] > 1:
+                            inventaire_joueur[id_objet] -= 1
+                        else:
+                            inventaire_joueur.pop(id_objet)
+                    menu_contextuel_actif = None
     
     if menu_contextuel_actif and not menu_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0] and current_time - last_click_time > click_delay:
         last_click_time = current_time

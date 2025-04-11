@@ -33,7 +33,7 @@ class perso(pygame.sprite.Sprite):
         self.image = self.animations[self.animation][self.frame_index]
         self.equipement = {
         "arme": None,
-        "plastron": None,
+        "armure": None,
         "bottes": None
         }
     def load_animation(self):
@@ -187,65 +187,58 @@ class perso(pygame.sprite.Sprite):
             print(f"Équipé : {objet['nom']}, Défense: {self.stats.get('defense', 0)}, Vitesse: {self.stats['vitesse']}")
             # Logique pour équiper (ex. : stocker l'armure équipée)
     def equiper_objet(self, id_objet):
-        if id_objet not in self.tous_les_objets:
-            print(f"Objet {id_objet} non trouvé !")
-            return
-
         objet = self.tous_les_objets[id_objet]
         type_objet = objet["type"]
-        sous_type = objet.get("sous_type")
+        sous_type = objet.get("sous-type", type_objet)
 
-        # Désequiper l'objet actuel si nécessaire
-        if type_objet == "arme" and self.equipement["arme"]:
-            self.deséquiper_objet(self.equipement["arme"])
-        elif type_objet == "armure" and sous_type and self.equipement.get(sous_type):
-            self.desequiper_objet(self.equipement[sous_type])
-
-        # Appliquer les effets
         if type_objet == "arme":
-            self.stats["combat"] += objet.get("combat", 0)
+            # Unequip previous weapon if any
+            if self.equipement["arme"]:
+                self.desequiper_objet(self.equipement["arme"])
             self.equipement["arme"] = id_objet
-            print(f"Équipé : {objet['nom']}, Combat: {self.stats['combat']}")
+            self.stats["combat"] += objet.get("combat", 0)
+            print(f"Équipé arme : {objet['nom']}, Combat: {self.stats['combat']}")
 
         elif type_objet == "armure":
-            self.stats["defense"] = self.stats.get("defense", 0) + objet.get("defense", 0)
-            if "vitesse" in objet:
-                self.stats["vitesse"] += objet["vitesse"]
-            if sous_type:
+            if sous_type in ["armure", "bottes"]:
+                # Unequip previous item in the same slot
+                if self.equipement[sous_type]:
+                    self.desequiper_objet(self.equipement[sous_type])
                 self.equipement[sous_type] = id_objet
-            print(f"Équipé : {objet['nom']}, Défense: {self.stats.get('defense', 0)}")
-
-        # Ne pas retirer l'objet de l'inventaire pour les équipements
+                self.stats["defense"] += objet.get("defense", 0)
+                if "vitesse" in objet:
+                    self.stats["vitesse"] += objet.get("vitesse", 0)
+                print(f"Équipé {sous_type} : {objet['nom']}, Défense: {self.stats['defense']}, Vitesse: {self.stats['vitesse']}")
+            else:
+                print(f"Erreur : Sous-type d'armure inconnu : {sous_type}")
+                return False
+        return True
 
     def desequiper_objet(self, id_objet):
-        if id_objet not in self.tous_les_objets:
-            return
-
-        objet = self.tous_les_objets[id_objet]
-        type_objet = objet["type"]
-
-        if type_objet == "arme":
-            self.stats["combat"] -= objet.get("combat", 0)
-            self.equipement["arme"] = None
-            print(f"Déséquipé : {objet['nom']}, Combat: {self.stats['combat']}")
-
-        elif type_objet == "armure":
-            self.stats["defense"] = self.stats.get("defense", 0) - objet.get("defense", 0)
-            if "vitesse" in objet:
-                self.stats["vitesse"] -= objet["vitesse"]
-            sous_type = objet.get("sous_type")
-            if sous_type:
-                self.equipement[sous_type] = None
-            print(f"Déséquipé : {objet['nom']}, Défense: {self.stats.get('defense', 0)}")
+        for slot, equipped_id in list(self.equipement.items()):
+            if equipped_id == id_objet:
+                objet = self.tous_les_objets[id_objet]
+                type_objet = objet["type"]
+                if type_objet == "arme":
+                    self.stats["combat"] -= objet.get("combat", 0)
+                    print(f"Déséquipé arme : {objet['nom']}, Combat: {self.stats['combat']}")
+                elif type_objet == "armure":
+                    self.stats["defense"] -= objet.get("defense", 0)
+                    if "vitesse" in objet:
+                        self.stats["vitesse"] -= objet.get("vitesse", 0)
+                    print(f"Déséquipé {slot} : {objet['nom']}, Défense: {self.stats['defense']}, Vitesse: {self.stats['vitesse']}")
+                self.equipement[slot] = None
+                return True
+        return False
 
     def utiliser_objet(self, id_objet):
         if id_objet not in self.inventaire or id_objet not in self.tous_les_objets:
             print(f"Objet {id_objet} non disponible !")
-            return None  # Retourne None si l'objet n'est pas disponible
+            return None
     
         objet = self.tous_les_objets[id_objet]
         type_objet = objet["type"]
-        message = None  # Variable pour stocker le message à afficher
+        message = None
     
         if type_objet == "consommable":
             if "vie" in objet:
@@ -264,9 +257,7 @@ class perso(pygame.sprite.Sprite):
                     self.retirer_objet(id_objet, 1)
                     message = f"Santé restaurée : {self.stats['sante']}"
                     print(message)
+        else:
+            message = f"Objet {objet['nom']} ne peut pas être utilisé directement"
     
-        elif type_objet in ["arme", "armure"]:
-            self.equiper_objet(id_objet)
-            message = f"Équipé : {objet['nom']}"
-    
-        return message  # Retourne le message pour affichage dans l'interface
+        return message
