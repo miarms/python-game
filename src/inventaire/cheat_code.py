@@ -10,7 +10,7 @@ def draw_input_box(surface, input_text, input_rect, font, active, couleur_texte,
     texte_rect = texte_surface.get_rect(center=input_rect.center)
     surface.blit(texte_surface, texte_rect)
 
-def cheats_code(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_texte, images_objets, font_titre, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage=None):
+def cheats_code(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_texte, images_objets, font_titre, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, misc_rect, stats_rect, slot_size, slot_margin, personnage=None):
     """
     Affiche une barre de saisie pour entrer l'ID d'un objet (1, 2, 3) et met à jour l'inventaire immédiatement.
     """
@@ -79,7 +79,7 @@ def cheats_code(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_tex
             fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets,
             font_titre, font_texte, couleur_bouton, gris_fonce, fond_section,
             slot_base_color, slot_hover_color, fond_transparent, mouse_pos,
-            clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage
+            misc_rect, stats_rect, slot_size, slot_margin, personnage
         )
         
         # Afficher l'instruction

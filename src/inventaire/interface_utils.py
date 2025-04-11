@@ -62,23 +62,21 @@ menu_contextuel_actif = None
 message_actif = None
 message_timer = 0
 
-def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets, font_titre, font_texte, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, mouse_pos, clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage=None):
+def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets, font_titre, font_texte, couleur_bouton, gris_fonce, fond_section, slot_base_color, slot_hover_color, fond_transparent, mouse_pos, misc_rect, stats_rect, slot_size, slot_margin, personnage=None):
     global menu_contextuel_actif, message_actif, message_timer
     
     fenetre_inventaire.fill(gris_fonce)
     
-    for rect in [clothing_rect, misc_rect, stats_rect]:
+    for rect in [misc_rect, stats_rect]:
         pygame.draw.rect(fenetre_inventaire, fond_section, rect, border_radius=5)
 
     titres = [
-        ("Vêtements", clothing_rect.top - 40),
         ("Objets", misc_rect.top - 40),
         ("Statistiques", stats_rect.top - 40)
     ]
     for texte, y_pos in titres:
         titre = font_titre.render(texte, True, couleur_bouton)
         titre_rect = titre.get_rect(center=(
-            clothing_rect.centerx if texte == "Vêtements" else 
             misc_rect.centerx if texte == "Objets" else 
             stats_rect.centerx, 
             y_pos
@@ -99,8 +97,8 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
     click_delay = 200
     
     sous_types_slots = {
-        "plastron": pygame.Rect(clothing_rect.x + slot_margin, clothing_rect.y + slot_margin, slot_size, slot_size),
-        "bottes": pygame.Rect(clothing_rect.x + slot_margin, clothing_rect.y + slot_margin + slot_size + slot_margin, slot_size, slot_size)
+        "plastron": pygame.Rect(misc_rect.x + slot_margin, misc_rect.y + slot_margin, slot_size, slot_size),
+        "bottes": pygame.Rect(misc_rect.x + slot_margin, misc_rect.y + slot_margin + slot_size + slot_margin, slot_size, slot_size)
     }
     for sous_type, slot_rect in sous_types_slots.items():
         draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
@@ -113,28 +111,31 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
             if slot_rect.collidepoint(mouse_pos):
                 objet_survole = id_objet
     
-    for i in range(10):
-        x = misc_rect.x + slot_margin + i * (slot_size + slot_margin)
-        y = misc_rect.y + slot_margin
-        slot_rect = pygame.Rect(x, y, slot_size, slot_size)
-        draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
-        index_objet = list(inventaire_joueur.keys())
-        if i < len(index_objet):
-            id_objet = index_objet[i]
-            if id_objet in images_objets and images_objets[id_objet]:
-                image_objet = images_objets[id_objet]
-                image_rect = image_objet.get_rect(center=slot_rect.center)
-                fenetre_inventaire.blit(image_objet, image_rect)
-                if tous_les_objets[id_objet]["type"] == "consommable" and inventaire_joueur[id_objet] > 1:
-                    quantite_texte = font_texte.render(str(inventaire_joueur[id_objet]), True, couleur_bouton)
-                    quantite_rect = quantite_texte.get_rect(bottomright=slot_rect.bottomright)
-                    fenetre_inventaire.blit(quantite_texte, quantite_rect)
-                if slot_rect.collidepoint(mouse_pos):
-                    objet_survole = id_objet
-                current_time = pygame.time.get_ticks()
-                if pygame.mouse.get_pressed()[0] and slot_rect.collidepoint(mouse_pos) and current_time - last_click_time > click_delay:
-                    last_click_time = current_time
-                    menu_contextuel_actif = (mouse_pos, id_objet)
+    # Slots pour les objets divers : 3 lignes de 10 slots
+    for row in range(3):  # 3 lignes
+        for col in range(10):  # 10 colonnes par ligne
+            x = misc_rect.x + slot_margin + col * (slot_size + slot_margin)
+            y = misc_rect.y + slot_margin + row * (slot_size + slot_margin)
+            slot_rect = pygame.Rect(x, y, slot_size, slot_size)
+            draw_slot(fenetre_inventaire, slot_rect, mouse_pos, slot_base_color, slot_hover_color, fond_transparent)
+            slot_index = row * 10 + col  # Index unique pour chaque slot (0 à 29)
+            index_objet = list(inventaire_joueur.keys())
+            if slot_index < len(index_objet):
+                id_objet = index_objet[slot_index]
+                if id_objet in images_objets and images_objets[id_objet]:
+                    image_objet = images_objets[id_objet]
+                    image_rect = image_objet.get_rect(center=slot_rect.center)
+                    fenetre_inventaire.blit(image_objet, image_rect)
+                    if tous_les_objets[id_objet]["type"] == "consommable" and inventaire_joueur[id_objet] > 1:
+                        quantite_texte = font_texte.render(str(inventaire_joueur[id_objet]), True, couleur_bouton)
+                        quantite_rect = quantite_texte.get_rect(bottomright=slot_rect.bottomright)
+                        fenetre_inventaire.blit(quantite_texte, quantite_rect)
+                    if slot_rect.collidepoint(mouse_pos):
+                        objet_survole = id_objet
+                    current_time = pygame.time.get_ticks()
+                    if pygame.mouse.get_pressed()[0] and slot_rect.collidepoint(mouse_pos) and current_time - last_click_time > click_delay:
+                        last_click_time = current_time
+                        menu_contextuel_actif = (mouse_pos, id_objet)
     
     if menu_contextuel_actif:
         menu_pos, id_objet = menu_contextuel_actif
@@ -182,8 +183,8 @@ def draw_inventory_interface(fenetre_inventaire, inventaire_joueur, tous_les_obj
     # Afficher le message temporaire en haut à droite de l'écran
     if message_actif and pygame.time.get_ticks() < message_timer:
         texte_message = font_texte.render(message_actif, True, couleur_bouton)
-        message_rect = texte_message.get_rect(topright=(fenetre_inventaire.get_width() - 10, 10))  # Position en haut à droite
-        pygame.draw.rect(fenetre_inventaire, (50, 60, 70), message_rect.inflate(10, 10), border_radius=5)  # Fond avec marge
+        message_rect = texte_message.get_rect(topright=(fenetre_inventaire.get_width() - 10, 10))
+        pygame.draw.rect(fenetre_inventaire, (50, 60, 70), message_rect.inflate(10, 10), border_radius=5)
         fenetre_inventaire.blit(texte_message, message_rect)
     
     if objet_survole:

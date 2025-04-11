@@ -22,22 +22,15 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
     slot_size = 64
     slot_margin = 8
     
-    clothing_width = 3 * (slot_size + slot_margin) + slot_margin
-    clothing_height = 3 * (slot_size + slot_margin) + slot_margin
-    clothing_rect = pygame.Rect(
-        50,
-        hauteur_inventaire - clothing_height - 50,
-        clothing_width,
-        clothing_height
-    )
     
-    misc_width = 10 * (slot_size + slot_margin) + slot_margin
-    misc_height = slot_size + 2 * slot_margin
+    # Ajuster misc_rect pour 3 lignes
+    misc_width = 10 * (slot_size + slot_margin) + slot_margin  # 10 slots par ligne
+    misc_height = 3 * (slot_size + slot_margin) + slot_margin  # 3 lignes
     misc_rect = pygame.Rect(
-        clothing_rect.right + 20,
-        hauteur_inventaire - misc_height - 50,
-        misc_width,
-        misc_height
+        50, # x position (left) - you might need to adjust this
+        hauteur_inventaire - misc_height - 50, # y position (top)
+        misc_width, # width
+        misc_height  # height
     )
     
     stats_width = 300
@@ -80,7 +73,7 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
                     if not cheats_code(
                         fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_bouton,
                         images_objets, font_titre, couleur_bouton, gris_fonce, fond_section,
-                        slot_base_color, slot_hover_color, fond_transparent, clothing_rect,
+                        slot_base_color, slot_hover_color, fond_transparent,
                         misc_rect, stats_rect, slot_size, slot_margin
                     ):
                         running = False
@@ -89,7 +82,7 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
             fenetre_inventaire, inventaire_joueur, tous_les_objets, images_objets,
             font_titre, font_texte, couleur_bouton, gris_fonce, fond_section,
             slot_base_color, slot_hover_color, fond_transparent, mouse_pos,
-            clothing_rect, misc_rect, stats_rect, slot_size, slot_margin, personnage
+            misc_rect, stats_rect, slot_size, slot_margin, personnage
         )
         
         pygame.display.flip()
