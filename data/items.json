@@ -1,6 +1,6 @@
 {
     "arme_1": {
-      "id": "epee_1",
+      "id": "1",
       "nom": "Épée rouillée",
       "description": "Une épée basique, vieille et usée.",
       "type": "arme",
@@ -9,7 +9,7 @@
       "image": "ressources/inventaire/arme/arme_1.png"
     },
     "potion_1": {
-      "id": "potion_001",
+      "id": "2",
       "nom": "Potion de soin",
       "description": "Restaure une petite quantité de vie.",
       "type": "consommable",
@@ -18,7 +18,7 @@
       "image": "ressources/inventaire/potion/potion_1.png"
     },
     "armure_1": {
-      "id": "armure_001",
+      "id": "3",
       "nom": "Armure de cuir",
       "description": "Fournit une protection basique.",
       "type": "armure",
