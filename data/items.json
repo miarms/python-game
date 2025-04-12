@@ -19,7 +19,7 @@
     },
     "armure_1": {
       "id": "3",
-      "nom": "Armure de cuir",
+      "nom": "Armure d'acier",
       "description": "Fournit une protection basique.",
       "type": "armure",
       "sous-type": "armure",
@@ -45,5 +45,15 @@
       "sante": 20,
       "valeur": 5,
       "image": "ressources/inventaire/potion/potion_2.png"
+    },
+    "armure_2": {
+      "id": "6",
+      "nom": "Armure de cuir",
+      "description": "Fournit une protection basique.",
+      "type": "armure",
+      "sous-type": "armure",
+      "defense": 5,
+      "valeur": 15,
+      "image": "ressources/inventaire/armure/armure_2.png"
     }
 }

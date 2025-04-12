@@ -1,5 +1,12 @@
 import pygame
 
+def draw_close_button(surface, rect, color):
+    """Dessine une croix à l'intérieur du rectangle donné."""
+    cross_color = color
+    line_width = 3
+    pygame.draw.line(surface, cross_color, (rect.left + 10, rect.top + 10), (rect.right - 10, rect.bottom - 10), line_width)
+    pygame.draw.line(surface, cross_color, (rect.right - 10, rect.top + 10), (rect.left + 10, rect.bottom - 10), line_width)
+
 def draw_tooltip(surface, objet, tous_les_objets, font_texte, couleur_texte, couleur_fond, couleur_bordure, mouse_pos, screen_width, screen_height):
     if not objet or objet not in tous_les_objets:
         return

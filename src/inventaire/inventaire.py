@@ -1,6 +1,6 @@
 import pygame
 from .cheat_code import cheats_code
-from .interface_utils import draw_inventory_interface
+from .interface_utils import draw_inventory_interface, draw_close_button
 
 def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_texte, couleur_texte, personnage):
     pygame.init()
@@ -41,7 +41,8 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
         stats_width,
         stats_height
     )
-    
+
+    close_button_rect = pygame.Rect(largeur_inventaire - 50, 10, 40, 40)
     running = True
     mouse_pos = (0, 0)
     
@@ -67,6 +68,12 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
                 running = False
             elif event.type == pygame.MOUSEMOTION:
                 mouse_pos = event.pos
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if close_button_rect.collidepoint(event.pos):
+                    running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False  # Fermer l'inventaire avec Échap
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     print("Touche 'h' pressée, lancement de cheats_code")
@@ -84,6 +91,8 @@ def inventaire(fenetre_inventaire, inventaire_joueur, tous_les_objets, font_text
             slot_base_color, slot_hover_color, fond_transparent, mouse_pos,
             misc_rect, stats_rect, slot_size, slot_margin, personnage
         )
+
+        draw_close_button(fenetre_inventaire, close_button_rect, couleur_bouton)
         
         pygame.display.flip()
         pygame.time.Clock().tick(60)
