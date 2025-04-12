@@ -5,6 +5,8 @@ from src.map.map_2 import map_2
 from src.BoiteDialogue import BoiteDialogue
 from src.perso import perso
 from src.inventaire.inventaire import inventaire
+from src.inventaire.interface_manager import InterfaceManager
+
 
 def map_1():
     # Initialisation de Pygame (sera déjà fait dans main.py, mais on le laisse ici pour compatibilité)
@@ -108,7 +110,7 @@ def map_1():
     joueur = perso(760, 400, "ressources/perso/perso.png", 1.5)  # Utilisez le chemin chargé
     joueur_group = pygame.sprite.GroupSingle(joueur)
 
-
+    interface = InterfaceManager(fenetre, joueur, font_texte, couleur_texte)
     # Liste pour stocker les rectangles des obstacles (murs et tables)
     obstacles = []
     porte_rect = None
@@ -140,9 +142,7 @@ def map_1():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 en_cours = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_i:
-                    afficher_inventaire = not afficher_inventaire  # Inverser l'état
+            interface.gerer_evenements(event)
             boite_dialogue.gerer_evenement(event)
 
         # Déplacement du joueur
@@ -201,12 +201,13 @@ def map_1():
                 elif tuile == 10:
                     fenetre.blit(tuiles["panier"], (x * TAILLE_TUILE, y * TAILLE_TUILE))
 
-        # Dessiner le joueur
-        joueur_group.draw(fenetre)
+    # Dessiner le joueur
+        if not interface.est_interface_active():
+            joueur_group.draw(fenetre)
         boite_dialogue.afficher(fenetre)
-        if afficher_inventaire:
-            inventaire(fenetre_inventaire, joueur.inventaire, joueur.tous_les_objets, font_texte, couleur_texte, joueur)
 
+        # Dessiner l'interface (inventaire ou cheats)
+        interface.dessiner()        
         # Mettre à jour l'affichage
         pygame.display.flip()
         clock.tick(60)
