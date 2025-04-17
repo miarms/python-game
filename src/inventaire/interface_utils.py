@@ -1,5 +1,15 @@
 import pygame
 
+def draw_input_box(surface, input_text, input_rect, font, active, couleur_texte, couleur_fond, couleur_bordure):
+    """
+    Dessine une boîte de saisie avec le texte actuel.
+    """
+    pygame.draw.rect(surface, couleur_fond, input_rect, border_radius=5)
+    pygame.draw.rect(surface, couleur_bordure, input_rect, 2 if active else 1, border_radius=5)
+    texte_surface = font.render(input_text, True, couleur_texte)
+    texte_rect = texte_surface.get_rect(center=input_rect.center)
+    surface.blit(texte_surface, texte_rect)
+
 def draw_close_button(surface, rect, color):
     """Dessine une croix à l'intérieur du rectangle donné."""
     cross_color = color
